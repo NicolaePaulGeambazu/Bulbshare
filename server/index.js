@@ -8,6 +8,7 @@ app.use(express.static(path.join(__dirname, 'assets')));
 
 const DATA_DIR = path.join(__dirname, 'data');
 const FEED_FILE = 'feed.json';
+const COMMENTS_FILE = 'comments.json';
 const ITEMS_PER_PAGE = 5;
 
 // Helper function to read JSON file
@@ -45,7 +46,28 @@ app.get('/products', async (req, res) => {
   }
 });
 
-// Start the server
+// Endpoint to return the list of comments by briefref
+app.get('/comments', async (req, res) => {
+  console.log(COMMENTS_FILE);
+  try {
+    // Extract briefref parameter from the query
+    const briefref = req.query.briefref;
+
+    // Read the content of comments.json
+    const filePath = path.join(DATA_DIR, COMMENTS_FILE);
+    const commentsData = await readJSONFile(filePath);
+
+    // Filter comments by briefref
+    const commentsByBriefref = commentsData.filter((comment) => comment.briefref === briefref);
+
+    // Respond with the comments for the given briefref
+    res.json(commentsByBriefref);
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 const PORT = 4000;
 app.listen(PORT, () => {
   console.log(`(HTTP) App now running on port ${PORT}`);
