@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 interface CardProps {
@@ -12,10 +12,11 @@ interface CardProps {
 const CardContainer = styled.div`
   position: relative;
   width: 100%;
-  border: 1px solid #ccc; /* Add borders or additional styling as needed */
+  border: 1px solid #ccc;
   border-radius: 8px;
   overflow: hidden;
   margin-top: 20px;
+  cursor: pointer;
 `;
 
 const Header = styled.header`
@@ -23,7 +24,7 @@ const Header = styled.header`
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  background-color: #f0f0f0; /* Add background color as needed */
+  background-color: #f0f0f0;
 `;
 
 const TitleHead = styled.div`
@@ -57,6 +58,13 @@ const Image = styled.img`
   object-fit: cover;
 `;
 
+const ImageOverlay = styled.img`
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  object-fit: cover;
+`;
+
 const TitleStyle = styled.h2`
   position: absolute;
   top: 50%;
@@ -72,24 +80,67 @@ const TitleStyle = styled.h2`
   }
 `;
 
+const FullscreenOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 10px;
+  background-color: transparent;
+  color: white;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+`;
+
 const Card = ({ brand, joinLink, bannerImage, feedTitle, brandlogo }: CardProps) => {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const openFullscreen = () => {
+    setIsFullscreen(true);
+  };
+
+  const closeFullscreen = () => {
+    setIsFullscreen(false);
+  };
+
   return (
-    <CardContainer>
-      <Header>
-        <TitleHead>
-          <BrandLogo src={brandlogo} alt='Brand logo' />
-          <p>{brand}</p>
-        </TitleHead>
-        <JoinLinkContainer>
-          <p>{joinLink}</p>
-          <a href={joinLink}>Join Brief Now</a>
-        </JoinLinkContainer>
-      </Header>
-      <ImageWrapper>
-        <Image src={bannerImage} alt="Feed Banner" />
-        <TitleStyle>{feedTitle}</TitleStyle>
-      </ImageWrapper>
-    </CardContainer>
+    <>
+      <CardContainer onClick={openFullscreen}>
+        <Header>
+          <TitleHead>
+            <BrandLogo src={brandlogo} alt='Brand logo' />
+            <p>{brand}</p>
+          </TitleHead>
+          <JoinLinkContainer>
+            <p>{joinLink}</p>
+            <a href={joinLink}>Join Brief Now</a>
+          </JoinLinkContainer>
+        </Header>
+        <ImageWrapper>
+          <Image src={bannerImage} alt="Feed Banner" />
+          <TitleStyle>{feedTitle}</TitleStyle>
+        </ImageWrapper>
+      </CardContainer>
+      {isFullscreen && (
+        <FullscreenOverlay>
+          <CloseButton onClick={closeFullscreen}>Close</CloseButton>
+          <ImageOverlay src={bannerImage} alt="Feed Banner" />
+        </FullscreenOverlay>
+      )}
+    </>
   );
 };
 
