@@ -36,7 +36,6 @@ app.get('/products', async (req, res) => {
 
     // Get the subset of data for the current page
     const paginatedData = jsonData.slice(startIndex, endIndex);
-
     // Respond with the paginated data
     res.json(paginatedData);
   } catch (error) {
